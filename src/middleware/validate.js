@@ -1,5 +1,5 @@
 import { z } from "zod";
-import ApiError from "../utils/ApiError.js";
+import ApiError from "../utils/apiError.js";
 
 const positiveInt = (fieldName) =>
   z
@@ -30,7 +30,7 @@ const createEventSchema = z.object({
       message: "Event date must be in the future",
     }),
 
-  capacity: z
+  total_capacity: z
     .number({ required_error: "Capacity is required" })
     .int("Capacity must be a whole number")
     .positive("Capacity must be greater than 0")
