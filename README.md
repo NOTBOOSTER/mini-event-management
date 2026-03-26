@@ -2,6 +2,12 @@
 
 A mini event management system built with Node.js, Express, and MySQL.
 
+## Test Url
+
+```bash
+https://event.straynodes.xyz/api
+```
+
 ---
 
 ## Tech Stack
@@ -24,22 +30,26 @@ A mini event management system built with Node.js, Express, and MySQL.
 ## Setup
 
 ### 1. Clone the repository
+
 ```bash
 git clone https://github.com/NOTBOOSTER/mini-event-management.git
 cd mini-event-management
 ```
 
 ### 2. Install dependencies
+
 ```bash
 npm install
 ```
 
 ### 3. Create environment file
+
 ```bash
 cp .env.example .env
 ```
 
 Open .env and update the values:
+
 ```env
 NODE_ENV=production
 SERVER_PORT=3333
@@ -51,6 +61,7 @@ DB_PASSWORD=root
 ```
 
 ### 4. Run the server
+
 ```bash
 npm start
 ```
@@ -63,11 +74,13 @@ No manual SQL setup needed.
 ## Docker Setup
 
 ### 1. Build the image
+
 ```bash
 docker build -t event-booking .
 ```
 
 ### 2. Run the container
+
 ```bash
 docker run -p 3333:3333 \
   -e NODE_ENV=production \
@@ -81,6 +94,7 @@ docker run -p 3333:3333 \
 ```
 
 Or using your env file:
+
 ```bash
 docker run -p 3333:3333 --env-file .env event-booking
 ```
@@ -90,33 +104,36 @@ docker run -p 3333:3333 --env-file .env event-booking
 ## API Docs
 
 Once the server is running open the following URL in your browser:
+
 ```
 http://localhost:3333/api-docs
 ```
 
 OR
+
 ```
-https://event.straynodes.xyz/api
+https://event.straynodes.xyz/api-docs
 ```
 
 ---
 
 ## Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/events | List all upcoming events |
-| POST | /api/events | Create a new event |
-| POST | /api/users/create | Create a new user |
-| POST | /api/bookings | Book a ticket for a user |
-| GET | /api/users/:id/bookings | Get all bookings for a user |
-| POST | /api/events/:id/attendance | Check tickets booked by confirmation code |
+| Method | Endpoint                   | Description                               |
+| ------ | -------------------------- | ----------------------------------------- |
+| GET    | /api/events                | List all upcoming events                  |
+| POST   | /api/events                | Create a new event                        |
+| POST   | /api/users/create          | Create a new user                         |
+| POST   | /api/bookings              | Book a ticket for a user                  |
+| GET    | /api/users/:id/bookings    | Get all bookings for a user               |
+| POST   | /api/events/:id/attendance | Check tickets booked by confirmation code |
 
 ---
 
 ## Manual Database Setup
 
 If you prefer to set up the database manually instead of letting the server do it:
+
 ```bash
 mysql -u root -p < schema.sql
 ```
@@ -124,6 +141,7 @@ mysql -u root -p < schema.sql
 ---
 
 ## Project Structure
+
 ```
 src/
     config/         database pool and environment config
