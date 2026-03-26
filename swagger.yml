@@ -427,6 +427,18 @@ components:
               data:
                 type: object
                 properties:
+                  id:
+                    type: integer
+                    example: 1
+                  booking_id:
+                    type: integer
+                    example: 2
+                  user_id:
+                    type: integer
+                    example: 1
+                  event_id:
+                    type: integer
+                    example: 1
                   tickets_booked:
                     type: integer
                     example: 1

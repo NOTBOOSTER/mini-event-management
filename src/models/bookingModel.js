@@ -30,7 +30,7 @@ export const getBookingByUserId = async (user_id) => {
 
 export const getBookingByConfirmationCode = async (confirmation_code) => {
   const [rows] = await pool.query(
-    "SELECT b.id, b.tickets_booked, b.confirmation_code, b.booking_date, e.title AS event_title, e.date AS event_date FROM bookings b JOIN events e ON b.event_id = e.id WHERE b.confirmation_code = ?",
+    "SELECT b.id, b.user_id, b.tickets_booked, b.confirmation_code, b.booking_date, e.title AS event_title, e.date AS event_date FROM bookings b JOIN events e ON b.event_id = e.id WHERE b.confirmation_code = ?",
     [confirmation_code]
   );
   return rows[0];
