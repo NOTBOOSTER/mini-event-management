@@ -1,0 +1,432 @@
+openapi: 3.0.4
+
+info:
+  title: Event Booking API
+  description: Mini Event Management System
+  version: 1.0.0
+
+servers:
+  - url: https://event.straynodes.xyz/api
+  - url: http://localhost:3000/api
+
+paths:
+  /events:
+    get:
+      summary: List all upcoming events
+      responses:
+        "200":
+          description: Events fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessEventsResponse"
+              example:
+                success: true
+                message: Events fetched successfully
+                data:
+                  - id: 1
+                    title: Tech Conference 2026
+                    description: A tech event
+                    date: "2026-06-01 10:00:00"
+                    total_capacity: 1000
+                    remaining_tickets: 999
+                    created_at: "2026-03-01 08:00:00"
+
+    post:
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEventInput"
+            example:
+              title: Tech Conference 2026
+              description: A tech event
+              date: "2026-06-01T10:00:00Z"
+              capacity: 1000
+      responses:
+        "201":
+          $ref: "#/components/responses/EventCreated"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: Title is required
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /bookings:
+    post:
+      summary: Book a ticket for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingInput"
+            example:
+              user_id: 1
+              event_id: 1
+      responses:
+        "201":
+          $ref: "#/components/responses/BookingCreated"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: user_id is required
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: Event not found
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: No tickets available
+
+  /users/create:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserInput"
+            example:
+              name: John Doe
+              email: john.doe@example.com
+      responses:
+        "201":
+          $ref: "#/components/responses/UserCreated"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: Email is required
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: Email already exists
+
+  /users/{id}/bookings:
+    get:
+      summary: Get all bookings for a user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "200":
+          $ref: "#/components/responses/UserBookingsFetched"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: User not found
+
+  /events/{id}/attendance:
+    post:
+      summary: Log attendance
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttendanceInput"
+            example:
+              code: A3F9C2B1D4E7
+      responses:
+        "200":
+          $ref: "#/components/responses/AttendanceLogged"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: Invalid confirmation code
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                message: Event not found
+
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Tech Conference 2026
+        description:
+          type: string
+          example: A tech event
+        date:
+          type: string
+          example: "2026-06-01 10:00:00"
+        total_capacity:
+          type: integer
+          example: 1000
+        remaining_tickets:
+          type: integer
+          example: 999
+        created_at:
+          type: string
+          example: "2026-03-01 08:00:00"
+
+    CreateEventInput:
+      type: object
+      required: [title, date, capacity]
+      properties:
+        title:
+          type: string
+          example: Ai Summit 2026
+        description:
+          type: string
+          example: A tech event
+        date:
+          type: string
+          example: "2026-06-01T10:00:00Z"
+        capacity:
+          type: integer
+          example: 1000
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        event_id:
+          type: integer
+          example: 1
+        tickets_booked:
+          type: integer
+          example: 1
+        confirmation_code:
+          type: string
+          example: A3F9C2B1D4E7
+        booking_date:
+          type: string
+          example: "2026-04-01 08:00:00"
+
+    CreateBookingInput:
+      type: object
+      required: [user_id, event_id, tickets]
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        event_id:
+          type: integer
+          example: 1
+        tickets:
+          type: integer
+          example: 1
+
+    AttendanceInput:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+          example: A3F9C2B1D4E7
+
+    CreateUserInput:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.doe@example.com
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Something went wrong
+
+    SuccessEventsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Events fetched successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    UserCreated:
+      description: User created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: User created successfully
+              data:
+                $ref: "#/components/schemas/CreateUserInput"
+
+    EventCreated:
+      description: Event created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Event created successfully
+              data:
+                $ref: "#/components/schemas/Event"
+
+    BookingCreated:
+      description: Booking created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Booking created successfully
+              data:
+                $ref: "#/components/schemas/Booking"
+
+    UserBookingsFetched:
+      description: Bookings fetched successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Bookings fetched successfully
+              data:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
+    AttendanceLogged:
+      description: Attendance logged successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Attendance logged successfully
+              data:
+                type: object
+                properties:
+                  tickets_booked:
+                    type: integer
+                    example: 1

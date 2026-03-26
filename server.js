@@ -1,17 +1,22 @@
-import express from 'express';
-import { connectDB } from './src/config/db.js';
-const PORT = process.env.PORT || 3000;
+import initDb from "./src/db/initDb.js";
+import { PORT } from "./src/config/envLoader.js";
+import Logger from "./src/utils/logger.js";
+import app from "./src/app.js";
 
+const logger = new Logger("Server");
 
-const app = express();
+try {
+  await initDb();
+} catch (error) {
+  logger.error(`Failed to initialize database: ${error.message}`);
+  process.exit(1);
+}
 
-connectDB();
-
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
-
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app
+  .listen(PORT, () => {
+    logger.success(`Server is running on port ${PORT}`);
+  })
+  .on("error", (err) => {
+    logger.error(`Failed to start server: ${err.message}`);
+    process.exit(1);
+  });

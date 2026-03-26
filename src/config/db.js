@@ -1,12 +1,18 @@
 import mysql from "mysql2/promise";
-import { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } from "./envLoader.js";
-import initDb from "../db/initDb.js";
+import {
+  DB_HOST,
+  DB_PORT,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+} from "./envLoader.js";
 
-export const pool = mysql.createPool({
+const pool = mysql.createPool({
   host: DB_HOST,
   port: DB_PORT,
   user: DB_USER,
   password: DB_PASSWORD,
+  database: DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -14,14 +20,4 @@ export const pool = mysql.createPool({
   keepAliveInitialDelay: 10000,
 });
 
-export const connectDB = async () => {
-  try {
-    const connection = await pool.getConnection();
-    console.log("Database connected successfully");
-    await initDb(pool);
-    connection.release();
-  } catch (err) {
-    console.error(err.message);
-    process.exit(1);
-  }
-};
+export default pool;
